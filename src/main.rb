@@ -48,7 +48,7 @@ class FileExplorer
   private
 
   def print_directory
-    puts "Command (h for help): #{@path} $ "
+    puts "#{@path} $ "
   end
 
   def get_input
@@ -79,7 +79,6 @@ class FileExplorer
   end
   
   def rename_file
-    #...
     puts 'Enter new file name: '
     new_name = get_input
     @changes << [:mv, File.basename(file_path), File.join(File.dirname(file_path), new_name)]
@@ -105,7 +104,27 @@ class FileExplorer
   end
 
   def save_changes
-    puts 'Changes saved'
+    puts 'Enter the file name to save changes: '
+    file_name = get_input
+    File.open(file_name, 'w') do |file|
+      @changes.each do |change|
+        case change[0]
+        when :cd
+          file.puts "cd #{change[1]}"
+        when :mv
+          file.puts "mv #{change[2]} #{change[1]}"
+        when :rm
+          file.puts "rm -r #{change[2]}"
+        when :cp
+          file.puts "cp -r #{change[2]} #{change[3]}"
+        when :touch
+          file.puts "touch #{File.join(change[2], change[1])}"
+        when :mkdir
+          file.puts "mkdir #{File.join(change[2], change[1])}"
+        end
+      end
+    end
+    puts "Changes saved to #{file_name}"
   end
 
   def find_files
@@ -175,10 +194,12 @@ class FileExplorer
   end
 
   def undo
-    #...
-    @path = last_change[1]
-    Dir.chdir(@path)
-    puts "Moved to #{@path}"
+    last_change = @changes.pop
+    case last_change[0]
+    when :cd
+      @path = last_change[1]
+      Dir.chdir(@path)
+      puts "Moved to #{@path}"
     when :mv
       File.rename(File.join(File.dirname(last_change[2]), last_change[1]), last_change[2])
       puts "#{last_change[1]} renamed back to #{File.basename(last_change[2])}"
