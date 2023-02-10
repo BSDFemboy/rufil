@@ -1,6 +1,9 @@
 # rufil
 ### Simple Ruby file manager for UNIX-Like systems.
 ***
+## Preview:
+![ImageNotFound](preview.png)
+***
 # How to use
 ## Basics
 You can start the program using the ``rufil`` command, if you want to open a specific directory you can use ``rufil /path``.
